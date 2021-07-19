@@ -1,0 +1,11 @@
+07/19/2021 22:28:50 PM - INFO - Start
+07/19/2021 22:28:50 PM - ERROR - -----****半径-4不合法***-----
+Traceback (most recent call last):
+  File "/Users/zhangmuxin/Desktop/Qt_Demo/Main/Cal.py", line 42, in Circle_Area
+    raise PositiveIntegerError
+Error_info.PositiveIntegerError: 请输入大于0的数
+Stack (most recent call last):
+  File "/Users/zhangmuxin/Desktop/Qt_Demo/Main/Cal.py", line 71, in <module>
+    newShape.Circle_Area(-4)
+  File "/Users/zhangmuxin/Desktop/Qt_Demo/Main/Cal.py", line 45, in Circle_Area
+    logging.error("-----****半径%d不合法***-----" % radius, exc_info=True, stack_info=True)
