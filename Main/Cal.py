@@ -36,7 +36,7 @@ class Cal(BuildError):
             print('矩形的面积是:%.2f' % area)
 
     # 圆形面积
-    def Circle_Area(self, radius):
+    def Circle_Area(self,radius):
         try:
             if radius < 0:
                 raise PositiveIntegerError
