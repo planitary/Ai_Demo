@@ -51,7 +51,7 @@ class Cal_Voume(BaseErrorInfo):
         else:
             S = math.pi * radius * radius
             Area = S * height
-            print("圆柱体的体积为：%.3f" % Area)
+            print("圆柱体的体积为：%.3f"% Area)
 
 if __name__ == '__main__':
     newShape = Cal_Voume()
