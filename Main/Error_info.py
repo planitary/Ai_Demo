@@ -1,5 +1,4 @@
 class BaseErrorInfo(Exception):
-    "自定义异常，检测类型错误时抛出类型不符合"
     "所有异常类的基类"
     pass
 
