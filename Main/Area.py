@@ -67,6 +67,6 @@ class Cal_Area(BuildError):
 
 
 if __name__ == '__main__':
-    newShape = Cal()
+    newShape = Cal_Area()
     newShape.Circle_Area(-4)
     newShape.Rectangle_Area(23,44)
