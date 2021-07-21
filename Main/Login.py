@@ -31,13 +31,13 @@ class Login:
         # 生成游标对象
         cur = conn.cursor()
         while flag == -1:
-            print("-------登录加载-----\n")
+            print("-------注册加载-----\n")
             _user = input('请输入用户名:')
             pwd = input('请输入密码:')
             Reg_find_sql = "select * from student where name = '%s'" % _user
             cur.execute(Reg_find_sql)
             result = cur.fetchall()
-            # 如果没有，则插入新用户数据，密码为md5加密
+            # 如果没有数据，则插入新用户数据，密码为md5加密
             if len(result) == 0:
                 logging.info('注册成功，用户名:%s' % _user)
                 insert_sql = "insert into student(name,password) values ('%s',md5('%s'))" % (_user, pwd)
@@ -58,16 +58,18 @@ class Login:
         conn = self._init_Db()
         isNeedReg = 0              # 是否需要注册
         cursor = conn.cursor()
-        isReg = len(self.UserToken)
-        while isReg == 0:
+        isLog = len(self.UserToken)         #登录完成的标志
+        while isLog == 0:
             _user = input('请输入用户名:')
             pwd = input('请输入密码:')
             login_find_sql = "select name,password,token from student where name = '%s'" % (_user)
             cursor.execute(login_find_sql)
             find_result = cursor.fetchone()
+            # 用户输入的密码加密后与数据库比对
             hashPwd = hashlib.md5()
             hashPwd.update(pwd.encode('utf8'))
             hashPwd_ = hashPwd.hexdigest()
+            # 如果找到了对应数据
             if find_result != None:
                 if hashPwd_ == find_result[1] and _user == find_result[0]:
                     logging.info('%s登录成功' %_user)
