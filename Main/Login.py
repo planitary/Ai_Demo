@@ -31,7 +31,8 @@ class Login:
         # 生成游标对象
         cur = conn.cursor()
         while flag == -1:
-            print("-------注册加载-----\n")
+            print("##################################################\n                       注册页面\n"
+                  "##################################################")
             _user = input('请输入用户名:')
             pwd = input('请输入密码:')
             Reg_find_sql = "select * from student where name = '%s'" % _user
