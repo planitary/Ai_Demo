@@ -10,13 +10,15 @@ class Login:
     '''链接数据库'''
     # 数据库初始化配置
     @classmethod
-    def _init_Db(self):
+    def _init_Db(self, data=None):
         db_dict = {'name':DbConfig.user,
                'pwd':DbConfig.password,
                'port':DbConfig.port,
                'db':DbConfig.db,
                'charset':DbConfig.charset,
                'host':DbConfig.host}
+        # 数据库锚点,用于向异常类传递数据库连接
+        cursor = 1
         # 链接数据库
         conn = pymysql.connect(host=db_dict['host'],user=db_dict['name'],password=db_dict['pwd'],
                                db=db_dict['db'],charset=db_dict['charset'])
@@ -38,6 +40,7 @@ class Login:
             Reg_find_sql = "select * from student where name = '%s'" % _user
             cur.execute(Reg_find_sql)
             result = cur.fetchall()
+            '''fetchall,fetchone等方法返回的是一个元组'''
             # 如果没有数据，则插入新用户数据，密码为md5加密
             if len(result) == 0:
                 logging.info('注册成功，用户名:%s' % _user)

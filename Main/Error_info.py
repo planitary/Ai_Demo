@@ -15,5 +15,10 @@ class PositiveIntegerError(BaseErrorInfo):
 
     def __str__(self):
         return '请输入大于0的数'
+class DbInitialError(BaseErrorInfo):
+    def __init__(self,cursor):
+        self.cursor = cursor
+    def __str__(self):
+        return '数据库链接失败'
 
 
