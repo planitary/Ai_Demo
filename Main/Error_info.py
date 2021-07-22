@@ -21,4 +21,10 @@ class DbInitialError(BaseErrorInfo):
     def __str__(self):
         return '数据库链接失败'
 
+class MatchError(BaseErrorInfo):
+    def __init__(self,MatchId):
+        self.Id = MatchId
+    def __str__(self):
+        return '匹配失败，错误码:%d' % self.Id
+
 

@@ -1,7 +1,6 @@
 import pymysql,hashlib
 from Config import DbConfig
-import time
-import logging
+import time,logging
 from Log import LogConfig
 from Extra import GetToken
 class Login:
@@ -10,7 +9,7 @@ class Login:
     '''链接数据库'''
     # 数据库初始化配置
     @classmethod
-    def _init_Db(self, data=None):
+    def _init_Db(self):
         db_dict = {'name':DbConfig.user,
                'pwd':DbConfig.password,
                'port':DbConfig.port,
@@ -117,9 +116,3 @@ if __name__ == '__main__':
                 if EndReg == 0:
                     print('注册成功')
                     time.sleep(1.3)
-
-
-
-
-
-

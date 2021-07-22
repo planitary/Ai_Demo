@@ -1,3 +1,4 @@
 # Qt_Demo
-Qt_Demo,No GUI V1.0
-QT开发的小练习，从0到1
+机器学习,No GUI V1.0
+
+_机器学习的小练习，从0到1_
