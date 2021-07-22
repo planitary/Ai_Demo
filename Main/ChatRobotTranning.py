@@ -50,9 +50,9 @@ class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
                 if result is not None:
                     print('该语句已存在')
                 else:
-                    TrainningInsertSql = "insert into Chat_Resource_Data (ClientToken,ClientAsk,AskForResponseId," \
-                                         "isStudy) " \ 
-                                    "values('%s','%s',%d,1)" % (Token, ClientMsg, self.AskForResponseId)
+                    TrainningInsertSql = "insert into Chat_Resource_Data " \
+                                         "(ClientToken,ClientAsk,AskForResponseId,isStudy) " \
+                                         "values('%s','%s',%d,1)" % (Token, ClientMsg, self.AskForResponseId)
                     cursor.execute(TrainningInsertSql)
                     cur.commit()
                     endOtherAsk = int(input('你还有其他的么? 1:有 0:没有\n'))
@@ -65,7 +65,7 @@ class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
             while endOtherResponse:
                 print("Robot:你希望我怎样回答?")
                 RobotMsg = input()
-                TrainningInsertSql = "insert into chat_response_data(RosponseToAskId,Response) values " \
+                TrainningInsertSql = "insert into chat_response_data(ResponseToAskId,Response) values " \
                                         "(%d,'%s')" % (self.RosponseToAskId, RobotMsg)
                 cursor.execute(TrainningInsertSql)
                 cur.commit()

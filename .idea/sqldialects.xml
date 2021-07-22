@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/Main/Chat.py" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/Main/ChatRobotTranning.py" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/Main/Login.py" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/Static/Sql/script.sql" dialect="MySQL" />
   </component>
 </project>
