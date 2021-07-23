@@ -32,7 +32,7 @@ class ChatWithRobot(AbstractChat.Ai,BaseErrorInfo):
         print('Robot:你好，我是robot，很高兴见到你')
 
         while 1:
-            Token = GetToken.CreateToken().GeneratorSerialize(username)
+            Token = GetToken.CreateToken(username).GetToken()
             Msg = input('jack:')
             """根据用户的话语，查询数据库找到AskForResponseId，与chat_response_data进行比对"""
             """判断用户所说的话是否为特殊话语（需要请求第三方应用）"""

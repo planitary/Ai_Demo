@@ -30,6 +30,7 @@ class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
 
     # 聊天训练模块
     def ChatTranning(self):
+        """获取训练者token，从登录接口获取，暂未实现，写死为jack"""
         cur = self.__DbInit()
         AskCount = 0                               # 统计训练数量
         ReponseCount = 0
@@ -43,7 +44,7 @@ class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
             logging.info("----------------训练开始--------------")
             logging.info('----------------用户发起聊天----------------')
             while endOtherAsk:
-                Token = GetToken.CreateToken().GeneratorSerialize('jack')
+                Token = GetToken.CreateToken('jack').GetToken()
                 print("Robot: 你会说什么呢?")
                 ClientMsg = input()
                 findIsStudySql = "select * from Chat_Resource_Data where ClientAsk = '%s'" % ClientMsg

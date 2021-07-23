@@ -14,9 +14,9 @@ str = time.strftime("%Y%m%d-%H-%M-%S",time.localtime())
 # logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
 #                     filename='..\Log\%s.log' % str)
 # windows日志配置
-# logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
-#                     filename='../Log/%s.log' % str,filemode='a',encoding = 'utf-8')
+logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
+                    filename='../Log/%s.log' % str,filemode='a',encoding = 'utf-8')
 
 # mac日志配置
-logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
-                    filename='../Log/%s.log' % str,filemode='a')
+# logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
+#                     filename='../Log/%s.log' % str,filemode='a')
