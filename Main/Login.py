@@ -47,7 +47,7 @@ class Login:
                 cur.execute(insert_sql)
                 conn.commit()  # 增删改需要先commit
                 logging.info("数据插入成功，insert into student('???','???') values (???,???)")
-                Token_ = GetToken.CreateToken().GeneratorSerialize(_user)
+                Token_ = GetToken.CreateToken(_user).GetToken()
                 '''插入用户对应token'''
                 insert_token_sql = "update student set token = '%s' where name = '%s'"%(Token_,_user)
                 cur.execute(insert_token_sql)
