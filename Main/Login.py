@@ -1,6 +1,5 @@
-import pymysql,hashlib
+import pymysql,hashlib,time,logging,ChatRobotTranning,Chat
 from Config import DbConfig
-import time,logging
 from Log import LogConfig
 from Extra import GetToken
 class Login:
@@ -36,20 +35,20 @@ class Login:
                   "##################################################")
             _user = input('请输入用户名:')
             pwd = input('请输入密码:')
-            Reg_find_sql = "select * from student where name = '%s'" % _user
+            Reg_find_sql = "select * from users where name = '%s'" % _user
             cur.execute(Reg_find_sql)
             result = cur.fetchall()
             '''fetchall,fetchone等方法返回的是一个元组'''
             # 如果没有数据，则插入新用户数据，密码为md5加密
             if len(result) == 0:
                 logging.info('注册成功，用户名:%s' % _user)
-                insert_sql = "insert into student(name,password) values ('%s',md5('%s'))" % (_user, pwd)
+                insert_sql = "insert into users(name,password) values ('%s',md5('%s'))" % (_user, pwd)
                 cur.execute(insert_sql)
                 conn.commit()  # 增删改需要先commit
-                logging.info("数据插入成功，insert into student('???','???') values (???,???)")
+                logging.info("数据插入成功，insert into users('???','???') values (???,???)")
                 Token_ = GetToken.CreateToken(_user).GetToken()
                 '''插入用户对应token'''
-                insert_token_sql = "update student set token = '%s' where name = '%s'"%(Token_,_user)
+                insert_token_sql = "update users set token = '%s' where name = '%s'"%(Token_,_user)
                 cur.execute(insert_token_sql)
                 conn.commit()
                 flag = 0
@@ -65,7 +64,7 @@ class Login:
         while isLog == 0:
             _user = input('请输入用户名:')
             pwd = input('请输入密码:')
-            login_find_sql = "select name,password,token from student where name = '%s'" % (_user)
+            login_find_sql = "select name,password,token from users where name = '%s'" % (_user)
             cursor.execute(login_find_sql)
             find_result = cursor.fetchone()
             # 用户输入的密码加密后与数据库比对
@@ -95,24 +94,27 @@ if __name__ == '__main__':
     Start = Login()
     # df = Start.Login_()
     count = 0
-    tokenLength = 0
+    global token
+    endFlag = ''     # 结束程序的标志
     '''一开始没有信息，无token，需要登录'''
-    while count <= 5:
-        if tokenLength != 0:
-            count += 1
-            print('请计算')
-        else:
-            time.sleep(1.4)
-            print("检测到您还没有登录，请先登录!")
-            '''获取登录信息，如果登录成功，刷新token(函数内部刷新)与flag值，表示不用注册，执行后续内容'''
-            RegFlag = Start.Login_()
-            if RegFlag == 0:
-                # token计数，如果成功获取到一次token，则下次循环不在重复获取
-                # 登录成功后会拿到token
-                token = Start.getToken()
-                tokenLength = len(token)
-            elif RegFlag == 1:
-                EndReg = Start.Register()
-                if EndReg == 0:
-                    print('注册成功')
-                    time.sleep(1.3)
+    time.sleep(1.4)
+    print("检测到您还没有登录，请先登录!")
+    '''获取登录信息，如果登录成功，刷新token(函数内部刷新)与flag值，表示不用注册，执行后续内容'''
+    RegFlag = Start.Login_()
+    if RegFlag == 0:
+        # 登录成功后会拿到token
+        token = Start.getToken()
+        # 程序开始运行
+        while endFlag != 'quit':
+            choice = int(input("请输入要运行的程序:1、计算面积  2、计算体积  3、与机器人聊天  4、训练机器人 5、退出\n"))
+            if choice == 3:
+                Chat.ChatWithRobot(token).Chat()
+            if choice == 4:
+                ChatRobotTranning.ChatRobot(token).ChatTranning()
+            if choice == 5:
+                endFlag = 'quit'
+    elif RegFlag == 1:
+        EndReg = Start.Register()
+        if EndReg == 0:
+            print('注册成功')
+            time.sleep(1.3)

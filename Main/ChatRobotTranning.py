@@ -7,15 +7,15 @@ from Extra import AbstractChat
 from Error_info import IllegalUserError
 
 class ChatRobot(AbstractChat.Ai, IllegalUserError):
-    # 鉴权，检测不到token值，报错
-    # TrainerToken = Login.Login().getToken()
-    TrainerToken = 'Jack' + str(random.randint(1,1000))
 
-    @classmethod
-    def __Authorize(cls):
+    def __init__(self, UserToken):
+        self.token = UserToken
+
+    # 鉴权机制
+    def __Authorize(self):
         ErrorCode = 0
         try:
-            if cls.TrainerToken == '':
+            if self.token == '':
                 ErrorCode = -1
                 raise IllegalUserError
         except Exception as e:
@@ -26,8 +26,8 @@ class ChatRobot(AbstractChat.Ai, IllegalUserError):
     """对机器人的回答做出限制，凡是带有问号的全部为疑问句，方便机器人模拟回答，（暂未实现）"""
     AskForResponseId = 0
     RosponseToAskId = 0
-    @classmethod
-    def __DbInit(cls):
+
+    def __DbInit(self):
         db_dict = {'name': DbConfig.user,
                    'pwd': DbConfig.password,
                    'port': DbConfig.port,
@@ -37,7 +37,7 @@ class ChatRobot(AbstractChat.Ai, IllegalUserError):
         # 数据库锚点,用于向异常类传递数据库连接
         cursor = 1
         # 链接数据库
-        if cls.__Authorize() != -1:
+        if self.token != -1:
             conn = pymysql.connect(host=db_dict['host'], user=db_dict['name'], password=db_dict['pwd'],
                                db=db_dict['db'], charset=db_dict['charset'])
             return conn
@@ -56,6 +56,10 @@ class ChatRobot(AbstractChat.Ai, IllegalUserError):
             endOtherResponse = 1                     # 判断是否还有别的响应
             endOtherAsk = 1                          # 判断是否还有别的语句
             isSpecial = -1                  # 判断是否为特殊语句
+            findUsernameByTokenSql = "select name from users where token = '%s'" %self.token
+            cursor.execute(findUsernameByTokenSql)
+            UserResult = cursor.fetchone()
+            UserName = UserResult[0]
 
         """扫描数据库，看是否有数据，有数据时拿到最后一条记录的askid，用于继续向数据库添加学习数据
         如果没有的话就从第一次开始"""
@@ -87,7 +91,7 @@ class ChatRobot(AbstractChat.Ai, IllegalUserError):
                         logging.info('特殊语句')
                         SpecialResponseSql = "insert into Chat_Resource_Data " \
                                          "(ClientToken,ClientAsk,AskForResponseId,isStudy,isSpecial) " \
-                                         "values('%s','%s',-1,1,1)" % (self.TrainerToken, ClientMsg)
+                                         "values('%s','%s',-1,1,1)" % (UserName, ClientMsg)
                         cursor.execute(SpecialResponseSql)
                         cur.commit()
                         logging.info('特殊语句插入成功')
@@ -95,7 +99,7 @@ class ChatRobot(AbstractChat.Ai, IllegalUserError):
                     else:
                         TrainningInsertSql = "insert into Chat_Resource_Data " \
                                          "(ClientToken,ClientAsk,AskForResponseId,isStudy) " \
-                                         "values('%s','%s',%d,1)" % (self.TrainerToken, ClientMsg, self.AskForResponseId)
+                                         "values('%s','%s',%d,1)" % (UserName, ClientMsg, self.AskForResponseId)
                         cursor.execute(TrainningInsertSql)
                         cur.commit()
                     endOtherAsk = int(input('你还有其他的么? 1:有 0:没有\n'))
@@ -134,5 +138,5 @@ class ChatRobot(AbstractChat.Ai, IllegalUserError):
 
 
 if __name__ == '__main__':
-    newTrainning = ChatRobot()
+    newTrainning = ChatRobot('')
     newTrainning.ChatTranning()

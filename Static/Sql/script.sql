@@ -22,4 +22,6 @@ create table chat_response_data
 )
     comment '回应话语库';
 
+alter table student rename to users;
+
 
