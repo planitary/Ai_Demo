@@ -11,7 +11,6 @@ class CreateToken():
         t = time.time()
         self.t_stamp = int(t)
 
-
     # 生成token
     @classmethod
     def __GeneratorSerialize(self,user):
