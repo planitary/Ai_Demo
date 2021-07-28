@@ -1,6 +1,6 @@
 import logging
 import time
-
+# -*- coding:utf-8 -*-
 
 # 格式化日志，指定格式
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
@@ -14,9 +14,12 @@ str = time.strftime("%Y%m%d-%H-%M-%S",time.localtime())
 # logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
 #                     filename='..\Log\%s.log' % str)
 # windows日志配置
-# logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
-#                     filename='../Log/%s.log' % str,filemode='a',encoding = 'utf-8')
-
-# mac日志配置
 logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
                     filename='../Log/%s.log' % str,filemode='a')
+
+
+# mac日志配置
+# logging.basicConfig(level=logging.DEBUG,format=LOG_FORMAT,datefmt=DATE_FORMAT,
+#                     filename='../Log/%s.log' % str,filemode='a')
+
+

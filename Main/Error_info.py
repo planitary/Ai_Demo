@@ -27,4 +27,16 @@ class MatchError(BaseErrorInfo):
     def __str__(self):
         return '匹配失败，错误码:%d' % self.Id
 
+class ResultError(BaseErrorInfo):
+
+    def __str__(self):
+        return '条件未找到'
+
+class IllegalUserError(BaseErrorInfo):
+    def __init__(self):
+        self.errCode = '000'
+
+    def __str__(self):
+        return "认证失败，非法操作!错误码:%s" % self.errCode
+
 

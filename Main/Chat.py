@@ -6,6 +6,7 @@ from Log import LogConfig
 from Extra import AbstractChat,GetThirdinfo,GetToken
 
 class ChatWithRobot(AbstractChat.Ai,BaseErrorInfo):
+    """chat_resource_data中AskForResponseId值的说明：-2，新语句，还未学习、-1，特殊语句，除此之外为正常的语句"""
     @classmethod
     def __DbInit(cls):
         db_dict = {'name': DbConfig.user,
@@ -25,7 +26,7 @@ class ChatWithRobot(AbstractChat.Ai,BaseErrorInfo):
         """用户登录后拿到token（暂未实现），Token目前写死"""
         db = self.__DbInit()
         cursor = db.cursor()
-        specialId = -1
+
         username = 'jack'
         print('-----------Robot进入聊天室-----------\n输入quit可退出')
         logging.info("-----------聊天开始-----------")
@@ -42,7 +43,7 @@ class ChatWithRobot(AbstractChat.Ai,BaseErrorInfo):
             '''此处有bug，比对成功后还需判断是否已学习，此处没做判断，后面优化'''
             # 非特殊语句
             # 比对成功
-            if result is not None and Msg != 'quit':
+            if result is not None and Msg != 'quit' :
                 specialId = result[1]
                 AFRId = result[0]
                 FindResponseByAFRId = "select Response from chat_response_data where ResponseToAskId = %d" % AFRId
@@ -66,19 +67,20 @@ class ChatWithRobot(AbstractChat.Ai,BaseErrorInfo):
                     specialInfo = result[2]
                     # 检测到特殊语句中包含天气
                     if '天气' in specialInfo:
-                        interFaceName = GetThirdinfo.GetWeather().getClassName()
-                        logging.info('调用接口:%s'% interFaceName)
+                        interfaceName = GetThirdinfo.GetWeather().getClassName()
+                        logging.info('调用接口:%s'% interfaceName)
                         weatherInfo = GetThirdinfo.GetWeather().getWeather()
                         print("Robot:%s今天天气:%s,实时温度:%s,今天白天气温:%s,夜间气温:%s,空气指数:%s"%(
                         weatherInfo['city'],weatherInfo['weather'],weatherInfo['temperature'],
                         weatherInfo['tem_day'],weatherInfo['tem_night'],weatherInfo['air']))
-                        logging.info('调用成功')
+                        logging.info('%s调用成功' % interfaceName)
             # 比对失败
             elif result is  None and Msg != 'quit':
                 '''没有在chat_resource_data中的数据表明没有学习过，先存入数据库，将isStudy字段设为0，后续更新'''
                 print("Robot:这个问题我还没学会呢，等我学会了再来回答你吧~")
                 logging.info("---------检测到新语句---------")
-                sql = "insert into chat_resource_data(ClientToken,ClientAsk,isStudy) values ('%s','%s',0)" %(Token,Msg)
+                sql = "insert into chat_resource_data(ClientToken,ClientAsk,AskForResponseId,isStudy) " \
+                      "values ('%s','%s',-2,0)" %(Token,Msg)
                 cursor.execute(sql)
                 db.commit()
                 logging.info('---------新语句插入成功---------')

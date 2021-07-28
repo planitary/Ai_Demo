@@ -1,17 +1,30 @@
-import pymysql, logging
+import random
+
+import pymysql, logging,Login
 from Config import DbConfig
 from Log import LogConfig
-from Extra import GetToken,AbstractChat
-from Error_info import *
+from Extra import AbstractChat
+from Error_info import IllegalUserError
 
+class ChatRobot(AbstractChat.Ai, IllegalUserError):
+    # 鉴权，检测不到token值，报错
+    # TrainerToken = Login.Login().getToken()
+    TrainerToken = 'Jack' + str(random.randint(1,1000))
 
-class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
-
-    # 全局计数，用于向Chat_Resource_Data库中添加用户话语id
-    AskForResponseId = 0
-    # 全局计数，用于向Chat_Response_Data库中添加机器人响应话语id
+    @classmethod
+    def __Authorize(cls):
+        ErrorCode = 0
+        try:
+            if cls.TrainerToken == '':
+                ErrorCode = -1
+                raise IllegalUserError
+        except Exception as e:
+            print(e)
+            logging.error("非法操作，无法获取用户身份!")
+        return ErrorCode
     '''用户语句与机器人响应为多对多，用户的AskForResponseId 与响应码RosponseToAskId一致时，为一组合适的匹配'''
     """对机器人的回答做出限制，凡是带有问号的全部为疑问句，方便机器人模拟回答，（暂未实现）"""
+    AskForResponseId = 0
     RosponseToAskId = 0
     @classmethod
     def __DbInit(cls):
@@ -24,27 +37,41 @@ class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
         # 数据库锚点,用于向异常类传递数据库连接
         cursor = 1
         # 链接数据库
-        conn = pymysql.connect(host=db_dict['host'], user=db_dict['name'], password=db_dict['pwd'],
+        if cls.__Authorize() != -1:
+            conn = pymysql.connect(host=db_dict['host'], user=db_dict['name'], password=db_dict['pwd'],
                                db=db_dict['db'], charset=db_dict['charset'])
-        return conn
+            return conn
 
     # 聊天训练模块
     def ChatTranning(self):
-        """获取训练者token，从登录接口获取，暂未实现，写死为jack"""
-        cur = self.__DbInit()
-        AskCount = 0                               # 统计训练数量
-        ReponseCount = 0
-        cursor = cur.cursor()
-        flag = 1
-        endOtherResponse = 1                     # 判断是否还有别的响应
-        endOtherAsk = 1                          # 判断是否还有别的语句
-        isSpecial = -1                  # 判断是否为特殊语句
+        # 鉴权，检测不到用户直接退出
+        if self.__Authorize() == -1:
+            return False
+        else:
+            cur = self.__DbInit()
+            AskCount = 0                               # 统计训练数量
+            ReponseCount = 0
+            cursor = cur.cursor()
+            flag = 1
+            endOtherResponse = 1                     # 判断是否还有别的响应
+            endOtherAsk = 1                          # 判断是否还有别的语句
+            isSpecial = -1                  # 判断是否为特殊语句
+
+        """扫描数据库，看是否有数据，有数据时拿到最后一条记录的askid，用于继续向数据库添加学习数据
+        如果没有的话就从第一次开始"""
+        findAskId = "select AskForResponseId from chat_resource_data where AskForResponseId > -1 " \
+                    "order by id desc limit 1"
+        cursor.execute(findAskId)
+        AskResult = cursor.fetchone()
+        if AskResult is not None:
+            self.AskForResponseId = AskResult[0] + 1
+            self.RosponseToAskId = AskResult[0] + 1
+
         while flag:
             print('--------------训练开始------------')
             logging.info("----------------训练开始--------------")
             logging.info('----------------用户发起聊天----------------')
             while endOtherAsk:
-                Token = GetToken.CreateToken('jack').GetToken()
                 print("Robot: 你会说什么呢?")
                 ClientMsg = input()
                 findIsStudySql = "select * from Chat_Resource_Data where ClientAsk = '%s'" % ClientMsg
@@ -60,7 +87,7 @@ class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
                         logging.info('特殊语句')
                         SpecialResponseSql = "insert into Chat_Resource_Data " \
                                          "(ClientToken,ClientAsk,AskForResponseId,isStudy,isSpecial) " \
-                                         "values('%s','%s',-1,1,1)" % (Token, ClientMsg)
+                                         "values('%s','%s',-1,1,1)" % (self.TrainerToken, ClientMsg)
                         cursor.execute(SpecialResponseSql)
                         cur.commit()
                         logging.info('特殊语句插入成功')
@@ -68,7 +95,7 @@ class ChatRobot(BaseErrorInfo,AbstractChat.Ai):
                     else:
                         TrainningInsertSql = "insert into Chat_Resource_Data " \
                                          "(ClientToken,ClientAsk,AskForResponseId,isStudy) " \
-                                         "values('%s','%s',%d,1)" % (Token, ClientMsg, self.AskForResponseId)
+                                         "values('%s','%s',%d,1)" % (self.TrainerToken, ClientMsg, self.AskForResponseId)
                         cursor.execute(TrainningInsertSql)
                         cur.commit()
                     endOtherAsk = int(input('你还有其他的么? 1:有 0:没有\n'))
