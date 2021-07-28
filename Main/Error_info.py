@@ -28,6 +28,8 @@ class MatchError(BaseErrorInfo):
         return '匹配失败，错误码:%d' % self.Id
 
 class ResultError(BaseErrorInfo):
+    def __init__(self):
+        pass
 
     def __str__(self):
         return '条件未找到'

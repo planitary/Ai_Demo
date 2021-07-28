@@ -8,7 +8,7 @@ class GetIp(ResultError):
 
     def Ip(self):
         try:
-            text = requests.get("http://baidu.com").text
+            text = requests.get("http://txt.go.sohu.com/ip/soip").text
             ip = re.findall(r'\d+.\d+.\d+.\d+', text)
             if len(ip) is 0:
                 raise ResultError
